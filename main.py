@@ -157,6 +157,11 @@ def stats(artists):
                         stats['no_files_by_type'].setdefault(ext, 0)
                         stats['no_files_by_type'][ext] += 1
 
+    stats['no_of_cds'] = {}
+    for albums in artists.values():
+        for album in albums:
+            stats['no_of_cds'].setdefault(len(album['cds']), 0)
+            stats['no_of_cds'][len(album['cds'])] += 1
 
     return stats
 
