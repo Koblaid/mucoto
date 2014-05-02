@@ -1,0 +1,35 @@
+<ul>
+
+
+{% for artist_name, albums in artists|dictsort %}
+<li>
+    {{ artist_name }}
+    <ul>
+    {% for album_dict in albums %}
+        <li>
+            [{{ album_dict.year }}] {{ album_dict.name }}
+
+            <table style="border: white solid 3px; font-size: 80%">
+                {% for track in album_dict.tracks %}
+                <tr>
+                    <td>{{ track.track_no }}</td> <td>{{ track.name }}</td> <td>{{ track.file_ext }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+        </li>
+
+    {% endfor %}
+
+    </ul>
+</li>
+{% endfor %}
+
+</ul>
+
+<dl>
+{% for k, v in stats.items() %}
+<dt>{{ k }}</dt>
+<dd>{{ v }}</dd>
+{% endfor %}
+</dl>
