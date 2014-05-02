@@ -63,8 +63,6 @@ def x():
 
             albums = []
             for albumpath in artistpath.dirs():
-                for unknownfile in albumpath.dirs():
-                    print('TODO %s' % unknownfile)
 
                 found_audio = False
                 found_dir = False
