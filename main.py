@@ -36,6 +36,20 @@ def parse_track_filename(track_path):
 
 
 
+
+def read_cd(cd_path):
+    tracks = []
+    meta_files = []
+    for file_path in sorted(cd_path.files()):
+        if file_path.ext.lower() in AUDIO_FILES:
+            tracks.append(parse_track_filename(file_path))
+        elif file_path.ext.lower() in META_FILES:
+            meta_files.append(file_path)
+        else:
+            print('unknown filetype', file_path.ext, file_path)
+    return tracks, meta_files
+
+
 def x():
     basepath = path('/home/ben/music')
 
@@ -52,16 +66,42 @@ def x():
                 for unknownfile in albumpath.dirs():
                     print('TODO %s' % unknownfile)
 
+                found_audio = False
+                found_dir = False
+                for el in albumpath.listdir():
+                    if el.isfile() and el.ext in AUDIO_FILES:
+                        found_audio = True
+                    elif el.isdir():
+                        found_dir = True
 
-                tracks = []
-                meta_files = []
-                for file_path in sorted(albumpath.files()):
-                    if file_path.ext.lower() in AUDIO_FILES:
-                        tracks.append(parse_track_filename(file_path))
-                    elif file_path.ext.lower() in META_FILES:
-                        meta_files.append(file_path)
-                    else:
-                        print('unknown filetype', file_path.ext, file_path)
+                if not found_audio and not found_dir:
+                    print('wrong dir, contains no audio or dir', albumpath)
+                if found_audio and found_dir:
+                    print('wrong dir, contains audio _and_ dir', albumpath)
+
+                cds = []
+                if found_dir:
+                    meta_files = []
+                    for el in albumpath.listdir():
+                        if el.isdir():
+                            match = re.match('cd\ ?([\d]{1})', el.basename(), re.IGNORECASE)
+                            cd_no = 0
+                            if match:
+                                (cd_no,) = match.groups()
+                            else:
+                                print('Wrong cd name', el)
+
+                            tracks, cd_meta_files = read_cd(el)
+                            cds.append({'cd_no': cd_no, 'tracks': tracks, 'meta_files': cd_meta_files})
+                        else:
+                            if el.ext in META_FILES:
+                                meta_files.append(el)
+                            else:
+                                print('unknown meta file', el)
+
+                else:
+                    tracks, meta_files = read_cd(albumpath)
+                    cds.append({'tracks': tracks, 'meta_files': [], 'cd_no': 0})
 
                 albumname = albumpath.basename()
                 albumyear = None
@@ -70,7 +110,7 @@ def x():
                 if match:
                     albumyear, albumname = match.groups()
 
-                albums.append({'name': albumname, 'tracks': tracks, 'meta_files': meta_files, 'year': albumyear})
+                albums.append({'name': albumname, 'cds': cds, 'meta_files': meta_files, 'year': albumyear})
 
             artists[str(artistpath.basename())] = albums
 
@@ -101,15 +141,22 @@ def stats(artists):
     stats['no_files_by_type'] = {}
     for albums in artists.values():
         for album in albums:
-            for track in album['tracks']:
-                ext = track['file_ext']
-                stats['no_files_by_type'].setdefault(ext, 0)
-                stats['no_files_by_type'][ext] += 1
+            for cd in album['cds']:
+                for track in cd['tracks']:
+                    ext = track['file_ext']
+                    stats['no_files_by_type'].setdefault(ext, 0)
+                    stats['no_files_by_type'][ext] += 1
 
             for filename in album['meta_files']:
                 ext = path(filename).ext
                 stats['no_files_by_type'].setdefault(ext, 0)
                 stats['no_files_by_type'][ext] += 1
+                for cd in album['cds']:
+                    for filename in cd['meta_files']:
+                        ext = path(filename).ext
+                        stats['no_files_by_type'].setdefault(ext, 0)
+                        stats['no_files_by_type'][ext] += 1
+
 
     return stats
 

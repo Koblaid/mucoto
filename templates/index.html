@@ -9,14 +9,30 @@
         <li>
             [{{ album_dict.year }}] {{ album_dict.name }}
 
-            <table style="border: white solid 3px; font-size: 80%">
-                {% for track in album_dict.tracks %}
-                <tr>
-                    <td>{{ track.track_no }}</td> <td>{{ track.name }}</td> <td>{{ track.file_ext }}</td>
-                </tr>
+            {% if album_dict.cds|length > 1 %}
+                <ul>
+                {% for cd in album_dict.cds|sort(attribute='cd_no') %}
+                    <li>
+                    CD {{ cd.cd_no }}
+                    <table style="border: white solid 3px; font-size: 80%">
+                        {% for track in cd.tracks %}
+                        <tr>
+                            <td>{{ track.track_no }}</td> <td>{{ track.name }}</td> <td>{{ track.file_ext }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    </li>
                 {% endfor %}
-            </table>
-
+                </ul>
+            {% else %}
+                <table style="border: white solid 3px; font-size: 80%">
+                    {% for track in album_dict.cds[0].tracks %}
+                    <tr>
+                        <td>{{ track.track_no }}</td> <td>{{ track.name }}</td> <td>{{ track.file_ext }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
         </li>
 
     {% endfor %}
