@@ -18,19 +18,22 @@ def parse_track_filename(track_path):
     match = re.match('(.+)\ -\ ([\d]{1,3})\ -\ (.+)\.(.{1,5})', file_name)
     if match:
         track_artist, track_no, track_name, file_ext = match.groups()
+        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext}
 
     match = re.match('([\d]{1,3})\ (.+)\ -\ (.+)\.(.{1,5})', file_name)
     if match:
         track_no, track_artist, track_name, file_ext = match.groups()
+        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext}
 
     match = re.match('(.+)\ -\ (.+)\.(.{1,5})', file_name)
     if match:
         track_artist, track_name, file_ext = match.groups()
+        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext}
 
     if not track_name:
         print('unknown audio file pattern: ', file_name)
+        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext}
 
-    return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext}
 
 
 def x():
