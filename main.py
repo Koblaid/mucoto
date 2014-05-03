@@ -79,7 +79,7 @@ def x():
 
                 cds = []
                 if found_dir:
-                    meta_files = []
+                    album_meta_files = []
                     for el in albumpath.listdir():
                         if el.isdir():
                             match = re.match('cd\ ?([\d]{1})', el.basename(), re.IGNORECASE)
@@ -93,12 +93,12 @@ def x():
                             cds.append({'cd_no': cd_no, 'tracks': tracks, 'meta_files': cd_meta_files})
                         else:
                             if el.ext in META_FILES:
-                                meta_files.append(el)
+                                album_meta_files.append(el)
                             else:
                                 print('unknown meta file', el)
 
                 else:
-                    tracks, meta_files = read_cd(albumpath)
+                    tracks, album_meta_files = read_cd(albumpath)
                     cds.append({'tracks': tracks, 'meta_files': [], 'cd_no': 0})
 
                 albumname = albumpath.basename()
@@ -108,7 +108,7 @@ def x():
                 if match:
                     albumyear, albumname = match.groups()
 
-                albums.append({'name': albumname, 'cds': cds, 'meta_files': meta_files, 'year': albumyear})
+                albums.append({'name': albumname, 'cds': cds, 'meta_files': album_meta_files, 'year': albumyear})
 
 
             artist_meta_files = []
