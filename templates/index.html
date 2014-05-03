@@ -45,7 +45,18 @@
 
 <dl>
 {% for k, v in stats.items() %}
-<dt>{{ k }}</dt>
-<dd>{{ v }}</dd>
+    <dt>{{ k }}</dt>
+    {% if v is mapping %}
+        <table style="border: white solid 3px; font-size: 70%">
+        {% for k1, v1 in v|dictsort(by='value')|reverse %}
+            <tr>
+            <td>{{ k1 }}</td>
+            <td>{{ v1 }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <dd>{{ v }}</dd>
+    {% endif %}
 {% endfor %}
 </dl>
