@@ -58,7 +58,9 @@ def read_cd(cd_path):
                 print('no duration', repr(track_dict['file_ext']), file_path)
                 track_obj = None
 
-            track_dict['length'] = track_obj.info.length if track_obj else 0
+            track_dict['length'] = 0 if track_obj is None else track_obj.info.length
+            if track_dict['length'] == 0:
+                print('no track length', file_path)
 
             tracks.append(track_dict)
         elif file_path.ext.lower() in META_FILES:
