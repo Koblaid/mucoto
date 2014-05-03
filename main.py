@@ -110,12 +110,18 @@ def x():
 
                 albums.append({'name': albumname, 'cds': cds, 'meta_files': meta_files, 'year': albumyear})
 
-            artists[str(artistpath.basename())] = albums
+
+            artist_meta_files = []
+            for filepath in artistpath.files():
+                if filepath.ext in META_FILES:
+                    artist_meta_files.append(str(filepath.basename()))
+                else:
+                    print('TODO %s' % filepath)
 
 
+            artists[str(artistpath.basename())] = {'albums': albums, 'meta_files': artist_meta_files}
 
-            for unknownfile in artistpath.files():
-                print('TODO %s' % unknownfile)
+
 
 
         for unknownfile in letterpath.files():
@@ -134,11 +140,16 @@ def stats(artists):
 
     stats['no_artists'] = len(artists)
 
-    stats['no_albums'] = sum((len(albums) for albums in artists.values()))
+    stats['no_albums'] = sum((len(artist['albums']) for artist in artists.values()))
 
     stats['no_files_by_type'] = {}
-    for albums in artists.values():
-        for album in albums:
+    for artist in artists.values():
+        for meta_file in artist['meta_files']:
+            ext = path(meta_file).ext
+            stats['no_files_by_type'].setdefault(ext, 0)
+            stats['no_files_by_type'][ext] += 1
+
+        for album in artist['albums']:
             for cd in album['cds']:
                 for track in cd['tracks']:
                     ext = track['file_ext']
@@ -156,8 +167,8 @@ def stats(artists):
                         stats['no_files_by_type'][ext] += 1
 
     stats['no_of_cds'] = {}
-    for albums in artists.values():
-        for album in albums:
+    for artist in artists.values():
+        for album in artist['albums']:
             stats['no_of_cds'].setdefault(len(album['cds']), 0)
             stats['no_of_cds'][len(album['cds'])] += 1
 

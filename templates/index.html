@@ -1,11 +1,11 @@
 <ul>
 
 
-{% for artist_name, albums in artists|dictsort %}
+{% for artist_name, artist in artists|dictsort %}
 <li>
-    {{ artist_name }}
+    {{ artist_name }} ({{ artist.meta_files }})
     <ul>
-    {% for album_dict in albums %}
+    {% for album_dict in artist.albums %}
         <li>
             [{{ album_dict.year }}] {{ album_dict.name }}
 
