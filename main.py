@@ -209,10 +209,24 @@ def stats(artists):
         avg_in_min=round(sum(all_length) / float(len(all_length)) / 60., 2),
     )
 
-    stats['bitrates'] = Counter()
+    stats['bitrates_by_tracks'] = Counter()
     for track in get_all_tracks(artists):
-        if track['bitrate'] % 1000 == 0:
-            stats['bitrates'][track['bitrate']] += 1
+        if track['bitrate'] % 1000 == 0 and track['bitrate'] > 0:
+            stats['bitrates_by_tracks'][track['bitrate']] += 1
+
+    stats['albums_with_heterogenous_bitrates'] = 0
+    stats['albums_with_homogenous_bitrates'] = Counter()
+    for artist in artists.values():
+        for album in artist['albums']:
+            bitrates = set()
+            for cd in album['cds']:
+                for track in cd['tracks']:
+                    if track['bitrate'] > 0:
+                        bitrates.add(track['bitrate'])
+            if len(bitrates) == 1:
+                stats['albums_with_homogenous_bitrates'][bitrates.pop()] += 1
+            else:
+                stats['albums_with_heterogenous_bitrates'] += 1
 
     return stats
 
