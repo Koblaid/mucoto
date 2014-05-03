@@ -183,12 +183,6 @@ def stats(artists):
         for album in artist['albums']:
             stats['no_of_cds'][len(album['cds'])] += 1
 
-    length = {
-        'total': 0,
-        'min': 9999,
-        'max': 0,
-        'avg': 9,
-    }
     all_length = []
     for artist in artists.values():
         for album in artist['albums']:
