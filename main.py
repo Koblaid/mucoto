@@ -154,6 +154,13 @@ def x():
     return artists
 
 
+def get_all_tracks(artists):
+    for artist in artists.values():
+        for album in artist['albums']:
+            for cd in album['cds']:
+                for track in cd['tracks']:
+                    yield track
+
 
 def stats(artists):
     stats = {}
@@ -184,12 +191,10 @@ def stats(artists):
             stats['no_of_cds'][len(album['cds'])] += 1
 
     all_length = []
-    for artist in artists.values():
-        for album in artist['albums']:
-            for cd in album['cds']:
-                for track in cd['tracks']:
-                    if track['length'] > 0:
-                        all_length.append(track['length'])
+    for track in get_all_tracks(artists):
+        if track['length'] > 0:
+            all_length.append(track['length'])
+
     stats['length'] = dict(
         total_in_h=round(sum(all_length) / 60. / 60, 2),
         min_in_sec=round(min(all_length), 2),
