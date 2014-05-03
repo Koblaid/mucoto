@@ -51,9 +51,12 @@ def parse_track_filename(track_path):
 def read_cd(cd_path):
     tracks = []
     meta_files = []
+    artists = set()
+
     for file_path in sorted(cd_path.files()):
         if file_path.ext.lower() in AUDIO_FILES:
             track_dict = parse_track_filename(file_path)
+            artists.add(track_dict['artist'])
 
             if track_dict['file_ext'] == '.mp3':
                 track_obj = mp3.MP3(file_path)
@@ -82,6 +85,10 @@ def read_cd(cd_path):
             meta_files.append(file_path)
         else:
             print('unknown filetype', file_path.ext, file_path)
+
+    if len(artists) > 1:
+        print('more than one artist in one cd', cd_path, artists)
+
     return tracks, meta_files
 
 
