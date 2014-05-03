@@ -181,6 +181,25 @@ def stats(artists):
         for album in artist['albums']:
             stats['no_of_cds'][len(album['cds'])] += 1
 
+    length = {
+        'total': 0,
+        'min': 9999,
+        'max': 0,
+        'avg': 9,
+    }
+    all_length = []
+    for artist in artists.values():
+        for album in artist['albums']:
+            for cd in album['cds']:
+                for track in cd['tracks']:
+                    if track['length'] > 0:
+                        all_length.append(track['length'])
+    stats['length'] = dict(
+        total_in_h=round(sum(all_length) / 60. / 60, 2),
+        min_in_sec=round(min(all_length), 2),
+        max_in_min=round(max(all_length) / 60. , 2),
+        avg_in_min=round(sum(all_length) / float(len(all_length)) / 60., 2),
+    )
     return stats
 
 
