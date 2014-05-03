@@ -58,9 +58,16 @@ def read_cd(cd_path):
                 print('no duration', repr(track_dict['file_ext']), file_path)
                 track_obj = None
 
-            track_dict['length'] = 0 if track_obj is None else track_obj.info.length
-            if track_dict['length'] == 0:
-                print('no track length', file_path)
+            if track_obj is not None:
+                track_dict['length'] = track_obj.info.length
+                track_dict['bitrate'] = track_obj.info.bitrate
+            else:
+                track_dict['length'] = 0
+                track_dict['bitrate'] = 0
+
+            if track_dict['length'] == 0 or track_dict['bitrate'] == 0:
+                print('missing track info', file_path)
+            print(track_dict['bitrate'], file_path)
 
             tracks.append(track_dict)
         elif file_path.ext.lower() in META_FILES:
@@ -201,6 +208,12 @@ def stats(artists):
         max_in_min=round(max(all_length) / 60. , 2),
         avg_in_min=round(sum(all_length) / float(len(all_length)) / 60., 2),
     )
+
+    stats['bitrates'] = Counter()
+    for track in get_all_tracks(artists):
+        if track['bitrate'] % 1000 == 0:
+            stats['bitrates'][track['bitrate']] += 1
+
     return stats
 
 
