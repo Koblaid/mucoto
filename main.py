@@ -1,5 +1,6 @@
 import os
 import re
+from collections import Counter
 
 from path import path
 
@@ -142,34 +143,25 @@ def stats(artists):
 
     stats['no_albums'] = sum((len(artist['albums']) for artist in artists.values()))
 
-    stats['no_files_by_type'] = {}
+    stats['no_files_by_type'] = Counter()
     for artist in artists.values():
         for meta_file in artist['meta_files']:
-            ext = path(meta_file).ext
-            stats['no_files_by_type'].setdefault(ext, 0)
-            stats['no_files_by_type'][ext] += 1
+            stats['no_files_by_type'][path(meta_file).ext] += 1
 
         for album in artist['albums']:
             for cd in album['cds']:
                 for track in cd['tracks']:
-                    ext = track['file_ext']
-                    stats['no_files_by_type'].setdefault(ext, 0)
-                    stats['no_files_by_type'][ext] += 1
+                    stats['no_files_by_type'][track['file_ext']] += 1
 
             for filename in album['meta_files']:
-                ext = path(filename).ext
-                stats['no_files_by_type'].setdefault(ext, 0)
-                stats['no_files_by_type'][ext] += 1
+                stats['no_files_by_type'][path(filename).ext] += 1
                 for cd in album['cds']:
                     for filename in cd['meta_files']:
-                        ext = path(filename).ext
-                        stats['no_files_by_type'].setdefault(ext, 0)
-                        stats['no_files_by_type'][ext] += 1
+                        stats['no_files_by_type'][path(filename).ext] += 1
 
-    stats['no_of_cds'] = {}
+    stats['no_of_cds'] = Counter()
     for artist in artists.values():
         for album in artist['albums']:
-            stats['no_of_cds'].setdefault(len(album['cds']), 0)
             stats['no_of_cds'][len(album['cds'])] += 1
 
     return stats
