@@ -76,7 +76,6 @@ def read_cd(cd_path):
 
             if track_dict['length'] == 0 or track_dict['bitrate'] == 0:
                 print('missing track info', file_path)
-            print(track_dict['bitrate'], file_path)
 
             tracks.append(track_dict)
         elif file_path.ext.lower() in META_FILES:
