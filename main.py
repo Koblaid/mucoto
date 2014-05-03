@@ -6,7 +6,7 @@ from path import path
 
 
 AUDIO_FILES = ('.mp3', '.mpc', '.ape', '.ogg')
-META_FILES = ('.tif', '.jpg', '.gif', '.bmp', '.nfo', '.txt', '.htm', '.doc')
+META_FILES = ('.tif', '.jpg', '.gif', '.bmp', '.nfo', '.txt', '.htm', '.doc', '.sfv')
 
 
 def parse_track_filename(track_path):
