@@ -3,6 +3,7 @@ import re
 from collections import Counter
 
 from path import path
+from mutagenx import mp3, oggvorbis, apev2, musepack
 
 
 AUDIO_FILES = ('.mp3', '.mpc', '.ape', '.ogg')
@@ -16,24 +17,24 @@ def parse_track_filename(track_path):
     track_no = 0
     track_artist = None
 
-    match = re.match('(.+)\ -\ ([\d]{1,3})\ -\ (.+)\.(.{1,5})', file_name)
+    match = re.match('(.+)\ -\ ([\d]{1,3})\ -\ (.+)(\..{1,5})', file_name)
     if match:
         track_artist, track_no, track_name, file_ext = match.groups()
-        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext}
+        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
-    match = re.match('([\d]{1,3})\ (.+)\ -\ (.+)\.(.{1,5})', file_name)
+    match = re.match('([\d]{1,3})\ (.+)\ -\ (.+)(\..{1,5})', file_name)
     if match:
         track_no, track_artist, track_name, file_ext = match.groups()
-        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext}
+        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
-    match = re.match('(.+)\ -\ (.+)\.(.{1,5})', file_name)
+    match = re.match('(.+)\ -\ (.+)(\..{1,5})', file_name)
     if match:
         track_artist, track_name, file_ext = match.groups()
-        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext}
+        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
     if not track_name:
         print('unknown audio file pattern: ', file_name)
-        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext}
+        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
 
 
@@ -43,7 +44,23 @@ def read_cd(cd_path):
     meta_files = []
     for file_path in sorted(cd_path.files()):
         if file_path.ext.lower() in AUDIO_FILES:
-            tracks.append(parse_track_filename(file_path))
+            track_dict = parse_track_filename(file_path)
+
+            if track_dict['file_ext'] == '.mp3':
+                track_obj = mp3.MP3(file_path)
+            elif track_dict['file_ext'] == '.ogg':
+                track_obj = oggvorbis.OggVorbis(file_path)
+            elif track_dict['file_ext'] == '.ape':
+                track_obj = apev2.APEv2File(file_path)
+            elif track_dict['file_ext'] == '.mpc':
+                track_obj = musepack.Musepack(file_path)
+            else:
+                print('no duration', repr(track_dict['file_ext']), file_path)
+                track_obj = None
+
+            track_dict['length'] = track_obj.info.length if track_obj else 0
+
+            tracks.append(track_dict)
         elif file_path.ext.lower() in META_FILES:
             meta_files.append(file_path)
         else:

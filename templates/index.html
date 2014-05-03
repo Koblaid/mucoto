@@ -17,7 +17,7 @@
                     <table style="border: white solid 3px; font-size: 80%">
                         {% for track in cd.tracks %}
                         <tr>
-                            <td>{{ track.track_no }}</td> <td>{{ track.name }}</td> <td>{{ track.file_ext }}</td>
+                            <td>{{ track.track_no }}</td> <td>{{ track.name }}</td> <td>{{ track.file_ext }}</td> <td>{{ (track.length / 60)|round(2) }}</td>
                         </tr>
                         {% endfor %}
                     </table>
@@ -28,7 +28,7 @@
                 <table style="border: white solid 3px; font-size: 80%">
                     {% for track in album_dict.cds[0].tracks %}
                     <tr>
-                        <td>{{ track.track_no }}</td> <td>{{ track.name }}</td> <td>{{ track.file_ext }}</td>
+                        <td>{{ track.track_no }}</td> <td>{{ track.name }}</td> <td>{{ track.file_ext }}</td> <td>{{ (track.length / 60)|round(2) }}</td>
                     </tr>
                     {% endfor %}
                 </table>
