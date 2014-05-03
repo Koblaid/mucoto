@@ -17,17 +17,26 @@ def parse_track_filename(track_path):
     track_no = 0
     track_artist = None
 
-    match = re.match('(.+)\ -\ ([\d]{1,3})\ -\ (.+)(\..{1,5})', file_name)
+    # <artist> - <track_no> - <track_name>.<ext>
+    match = re.match('^(.+)\ -\ ([\d]{1,3})\ -\ (.+)(\..{1,5})$', file_name)
     if match:
         track_artist, track_no, track_name, file_ext = match.groups()
         return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
-    match = re.match('([\d]{1,3})\ (.+)\ -\ (.+)(\..{1,5})', file_name)
+    # <track_no>  - <artist> - <track_name>.<ext>
+    match = re.match('^([\d]{1,3})\ (.+)\ -\ (.+)(\..{1,5})$', file_name)
     if match:
         track_no, track_artist, track_name, file_ext = match.groups()
         return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
-    match = re.match('(.+)\ -\ (.+)(\..{1,5})', file_name)
+    # <track_no> <artist> - <track_name>.<ext>
+    match = re.match('^([\d]{1,3})\ (.+)\ -\ (.+)(\..{1,5})$', file_name)
+    if match:
+        track_no, track_artist, track_name, file_ext = match.groups()
+        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
+
+    # <artist> - <track_name>
+    match = re.match('^(.+)\ -\ (.+)(\..{1,5})$', file_name)
     if match:
         track_artist, track_name, file_ext = match.groups()
         return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
