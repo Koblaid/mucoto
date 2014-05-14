@@ -63,7 +63,6 @@ def read_cd(cd_path):
         if file_path.ext.lower() in AUDIO_FILES:
             track_dict = parse_track_filename(file_path)
             artists.add(track_dict['artist'])
-            read_audio_file_tags(track_dict)
             tracks.append(track_dict)
         elif file_path.ext.lower() in META_FILES:
             meta_files.append(file_path)
@@ -186,6 +185,11 @@ def x():
         print('TODO %s' % unknownfile)
 
     return artists
+
+
+def read_tags(artists):
+    for track_dict in get_all_tracks(artists):
+        read_audio_file_tags(track_dict)
 
 
 def get_all_tracks(artists):
