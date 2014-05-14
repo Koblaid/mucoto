@@ -62,6 +62,7 @@ def read_cd(cd_path):
     for file_path in sorted(cd_path.files()):
         if file_path.ext.lower() in AUDIO_FILES:
             track_dict = parse_track_filename(file_path)
+            track_dict['size'] = file_path.getsize()
             artists.add(track_dict['artist'])
             tracks.append(track_dict)
         elif file_path.ext.lower() in META_FILES:
@@ -238,6 +239,16 @@ def stats(artists):
             max_in_min=round(max(all_length) / 60. , 2),
             avg_in_min=round(sum(all_length) / float(len(all_length)) / 60., 2),
         )
+
+    all_size = []
+    for track in get_all_tracks(artists):
+        all_size.append(track['size'])
+    stats['size'] = dict(
+        total_in_gb=round(sum(all_size) / 1000 / 1000 / 1000, 3),
+        min_in_mb=round(min(all_size) / 1000 / 1000, 3),
+        max_in_mb=round(max(all_size) / 1000 / 1000, 3),
+        avg_in_mb=round(sum(all_size) / float(len(all_size)) / 1000 / 1000, 3),
+    )
 
     stats['bitrates_by_tracks'] = Counter()
     for track in get_all_tracks(artists):
