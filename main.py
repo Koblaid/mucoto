@@ -58,16 +58,19 @@ def read_cd(cd_path):
             track_dict = parse_track_filename(file_path)
             artists.add(track_dict['artist'])
 
-            if track_dict['file_ext'] == '.mp3':
-                track_obj = mp3.MP3(file_path)
-            elif track_dict['file_ext'] == '.ogg':
-                track_obj = oggvorbis.OggVorbis(file_path)
-            elif track_dict['file_ext'] == '.ape':
-                track_obj = apev2.APEv2File(file_path)
-            elif track_dict['file_ext'] == '.mpc':
-                track_obj = musepack.Musepack(file_path)
-            else:
-                print('no duration', repr(track_dict['file_ext']), file_path)
+            try:
+                if track_dict['file_ext'] == '.mp3':
+                    track_obj = mp3.MP3(file_path)
+                elif track_dict['file_ext'] == '.ogg':
+                    track_obj = oggvorbis.OggVorbis(file_path)
+                elif track_dict['file_ext'] == '.ape':
+                    track_obj = apev2.APEv2File(file_path)
+                elif track_dict['file_ext'] == '.mpc':
+                    track_obj = musepack.Musepack(file_path)
+                else:
+                    raise Exception('Unknown file format')
+            except Exception as e:
+                print('error while reading tag of %s: %s' % (file_path, e))
                 track_obj = None
 
             if track_obj is not None:
