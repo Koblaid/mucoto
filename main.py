@@ -61,32 +61,7 @@ def read_cd(cd_path):
         if file_path.ext.lower() in AUDIO_FILES:
             track_dict = parse_track_filename(file_path)
             artists.add(track_dict['artist'])
-
-            try:
-                if track_dict['file_ext'] == '.mp3':
-                    track_obj = mp3.MP3(file_path)
-                elif track_dict['file_ext'] == '.ogg':
-                    track_obj = oggvorbis.OggVorbis(file_path)
-                elif track_dict['file_ext'] == '.ape':
-                    track_obj = apev2.APEv2File(file_path)
-                elif track_dict['file_ext'] == '.mpc':
-                    track_obj = musepack.Musepack(file_path)
-                else:
-                    raise Exception('Unknown file format')
-            except Exception as e:
-                print('error while reading tag of %s: %s' % (file_path, e))
-                track_obj = None
-
-            if track_obj is not None:
-                track_dict['length'] = track_obj.info.length
-                track_dict['bitrate'] = track_obj.info.bitrate
-            else:
-                track_dict['length'] = 0
-                track_dict['bitrate'] = 0
-
-            if track_dict['length'] == 0 or track_dict['bitrate'] == 0:
-                print('missing track info', file_path)
-
+            read_audio_file_tags(track_dict)
             tracks.append(track_dict)
         elif file_path.ext.lower() in META_FILES:
             meta_files.append(file_path)
@@ -97,6 +72,34 @@ def read_cd(cd_path):
         print('more than one artist in one cd', cd_path, artists)
 
     return tracks, meta_files
+
+
+def read_audio_file_tags(track_dict):
+    file_path = track_dict['file_path']
+    try:
+        if track_dict['file_ext'] == '.mp3':
+            track_obj = mp3.MP3(file_path)
+        elif track_dict['file_ext'] == '.ogg':
+            track_obj = oggvorbis.OggVorbis(file_path)
+        elif track_dict['file_ext'] == '.ape':
+            track_obj = apev2.APEv2File(file_path)
+        elif track_dict['file_ext'] == '.mpc':
+            track_obj = musepack.Musepack(file_path)
+        else:
+            raise Exception('Unknown file format')
+    except Exception as e:
+        print('error while reading tag of %s: %s' % (file_path, e))
+        track_obj = None
+
+    if track_obj is not None:
+        track_dict['length'] = track_obj.info.length
+        track_dict['bitrate'] = track_obj.info.bitrate
+    else:
+        track_dict['length'] = 0
+        track_dict['bitrate'] = 0
+
+    if track_dict['length'] == 0 or track_dict['bitrate'] == 0:
+        print('missing track info', file_path)
 
 
 def x():
