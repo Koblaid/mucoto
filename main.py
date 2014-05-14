@@ -9,7 +9,7 @@ from mutagenx import mp3, oggvorbis, apev2, musepack
 AUDIO_FILES = ('.mp3', '.mpc', '.ape', '.ogg', 'wma')
 META_FILES = ('.tif', '.jpg', '.gif', '.bmp', '.nfo', '.txt', '.htm', '.doc', '.sfv', '.m3u')
 
-RE = dict(
+RE_PARTS = dict(
     artist='(?P<artist>.+)',
     track_name='(?P<track_name>.+)',
     track_no='(?P<track_no>[\d]{1,3})',
@@ -22,13 +22,6 @@ FORMATS = (
     '<track_no> <artist> - <track_name><ext>',
     '<artist> - <track_name><ext>'
 )
-
-
-def build_re(format_str):
-    format_str = format_str.replace(' ', '\ ')
-    for re in RE:
-        format_str = format_str.replace('<'+re+'>', RE[re])
-    return '^' + format_str + '$'
 
 
 def parse_track_filename(track_path):
@@ -44,7 +37,11 @@ def parse_track_filename(track_path):
     )
 
     for format_str in FORMATS:
-        match = re.match(build_re(format_str), file_name)
+        re_str = format_str.replace(' ', '\ ')
+        for part in RE_PARTS:
+            re_str = re_str.replace('<'+part+'>', RE_PARTS[part])
+        re_str = '^' + re_str + '$'
+        match = re.match(re_str, file_name)
         if match:
             track_dict.update(match.groupdict())
             break
