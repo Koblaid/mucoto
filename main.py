@@ -6,8 +6,8 @@ from path import path
 from mutagenx import mp3, oggvorbis, apev2, musepack
 
 
-AUDIO_FILES = ('.mp3', '.mpc', '.ape', '.ogg')
-META_FILES = ('.tif', '.jpg', '.gif', '.bmp', '.nfo', '.txt', '.htm', '.doc', '.sfv')
+AUDIO_FILES = ('.mp3', '.mpc', '.ape', '.ogg', 'wma')
+META_FILES = ('.tif', '.jpg', '.gif', '.bmp', '.nfo', '.txt', '.htm', '.doc', '.sfv', '.m3u')
 
 
 def parse_track_filename(track_path):
