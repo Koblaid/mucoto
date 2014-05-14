@@ -103,10 +103,8 @@ def read_audio_file_tags(track_dict):
         print('missing track info', file_path)
 
 
-def x():
-    basepath = path('/home/ben/music')
-
-
+def parse_directory(basepath):
+    basepath = path(basepath)
     artists = {}
     for letterpath in basepath.dirs():
 

@@ -8,8 +8,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
+    artists = main.parse_directory(dir_path)
     start = time.time()
-    artists = main.x()
     duration = time.time() - start
     stats = main.stats(artists)
     return render_template('index.html', artists=artists, stats=stats, duration=duration)
