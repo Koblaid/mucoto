@@ -33,7 +33,9 @@ def parse_track_filename(track_path):
         track_name=None,
         track_no=0,
         track_artist=None,
-        file_path=track_path
+        file_path=track_path,
+        length=0,
+        bitrate=0,
     )
 
     for format_str in FORMATS:
