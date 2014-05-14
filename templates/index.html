@@ -1,16 +1,21 @@
-<ul>
+<head>
+    <script type="text/javascript" src="http://code.stephenmorley.org/javascript/collapsible-lists/CollapsibleLists.compressed.js"></script>
+</head>
+
+<body>
+<ul class="collapsibleList">
 
 
 {% for artist_name, artist in artists|dictsort %}
 <li>
     {{ artist_name }} ({{ artist.meta_files }})
-    <ul>
+    <ul class="collapsibleList">
     {% for album_dict in artist.albums %}
         <li>
             [{{ album_dict.year }}] {{ album_dict.name }}
 
             {% if album_dict.cds|length > 1 %}
-                <ul>
+                <ul class="collapsibleList">
                 {% for cd in album_dict.cds|sort(attribute='cd_no') %}
                     <li>
                     CD {{ cd.cd_no }}
@@ -65,3 +70,9 @@
 Parsing directory: {{ dir_duration|round(1) }} sec <br>
 Reading tags: {{ tag_duration|round(1) }} sec <br>
 Generating stats: {{ stats_duration|round(1) }} sec <br>
+
+<script>
+CollapsibleLists.apply();
+</script>
+
+</body>
