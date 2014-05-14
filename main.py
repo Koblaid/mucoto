@@ -10,10 +10,17 @@ AUDIO_FILES = ('.mp3', '.mpc', '.ape', '.ogg', 'wma')
 META_FILES = ('.tif', '.jpg', '.gif', '.bmp', '.nfo', '.txt', '.htm', '.doc', '.sfv', '.m3u')
 
 RE = dict(
-    artist='(.+)',
-    track_name='(.+)',
-    track_no='([\d]{1,3})',
-    ext='(\..{1,5})',
+    artist='(?P<artist>.+)',
+    track_name='(?P<track_name>.+)',
+    track_no='(?P<track_no>[\d]{1,3})',
+    ext='(?P<ext>\..{1,5})',
+)
+
+FORMATS = (
+    '<artist> - <track_no> - <track_name><ext>',
+    '<track_no>  - <artist> - <track_name><ext>',
+    '<track_no> <artist> - <track_name><ext>',
+    '<artist> - <track_name><ext>'
 )
 
 
@@ -26,36 +33,26 @@ def build_re(format_str):
 
 def parse_track_filename(track_path):
     file_name = track_path.basename()
-    file_ext = track_path.ext
-    track_name = None
-    track_no = 0
-    track_artist = None
+    track_dict = dict(
+        file_name=file_name,
+        file_ext=track_path.ext,
+        artist=None,
+        track_name=None,
+        track_no=0,
+        track_artist=None,
+        file_path=track_path
+    )
 
-    match = re.match(build_re('<artist> - <track_no> - <track_name><ext>'), file_name)
-    if match:
-        track_artist, track_no, track_name, file_ext = match.groups()
-        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
-
-    match = re.match(build_re('<track_no>  - <artist> - <track_name><ext>'), file_name)
-    if match:
-        track_no, track_artist, track_name, file_ext = match.groups()
-        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
-
-    match = re.match(build_re('<track_no> <artist> - <track_name><ext>'), file_name)
-    if match:
-        track_no, track_artist, track_name, file_ext = match.groups()
-        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
-
-    match = re.match(build_re('<artist> - <track_name><ext>'), file_name)
-    if match:
-        track_artist, track_name, file_ext = match.groups()
-        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
-
-    if not track_name:
+    for format_str in FORMATS:
+        match = re.match(build_re(format_str), file_name)
+        if match:
+            track_dict.update(match.groupdict())
+            break
+    else:
         print('unknown audio file pattern: ', file_name)
-        return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
-
+    track_dict['track_no'] = int(track_dict['track_no'])
+    return track_dict
 
 
 def read_cd(cd_path):
