@@ -228,7 +228,7 @@ def stats(artists):
     stats['bitrates_by_tracks'] = Counter()
     for track in get_all_tracks(artists):
         if track['bitrate'] % 1000 == 0 and track['bitrate'] > 0:
-            stats['bitrates_by_tracks'][track['bitrate']] += 1
+            stats['bitrates_by_tracks'][track['bitrate']/1000] += 1
 
     stats['albums_with_heterogenous_bitrates'] = 0
     stats['albums_with_homogenous_bitrates'] = Counter()
