@@ -9,6 +9,20 @@ from mutagenx import mp3, oggvorbis, apev2, musepack
 AUDIO_FILES = ('.mp3', '.mpc', '.ape', '.ogg', 'wma')
 META_FILES = ('.tif', '.jpg', '.gif', '.bmp', '.nfo', '.txt', '.htm', '.doc', '.sfv', '.m3u')
 
+RE = dict(
+    artist='(.+)',
+    track_name='(.+)',
+    track_no='([\d]{1,3})',
+    ext='(\..{1,5})',
+)
+
+
+def build_re(format_str):
+    format_str = format_str.replace(' ', '\ ')
+    for re in RE:
+        format_str = format_str.replace('<'+re+'>', RE[re])
+    return '^' + format_str + '$'
+
 
 def parse_track_filename(track_path):
     file_name = track_path.basename()
@@ -17,26 +31,22 @@ def parse_track_filename(track_path):
     track_no = 0
     track_artist = None
 
-    # <artist> - <track_no> - <track_name>.<ext>
-    match = re.match('^(.+)\ -\ ([\d]{1,3})\ -\ (.+)(\..{1,5})$', file_name)
+    match = re.match(build_re('<artist> - <track_no> - <track_name><ext>'), file_name)
     if match:
         track_artist, track_no, track_name, file_ext = match.groups()
         return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
-    # <track_no>  - <artist> - <track_name>.<ext>
-    match = re.match('^([\d]{1,3})\ (.+)\ -\ (.+)(\..{1,5})$', file_name)
+    match = re.match(build_re('<track_no>  - <artist> - <track_name><ext>'), file_name)
     if match:
         track_no, track_artist, track_name, file_ext = match.groups()
         return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
-    # <track_no> <artist> - <track_name>.<ext>
-    match = re.match('^([\d]{1,3})\ (.+)\ -\ (.+)(\..{1,5})$', file_name)
+    match = re.match(build_re('<track_no> <artist> - <track_name><ext>'), file_name)
     if match:
         track_no, track_artist, track_name, file_ext = match.groups()
         return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
 
-    # <artist> - <track_name>
-    match = re.match('^(.+)\ -\ (.+)(\..{1,5})$', file_name)
+    match = re.match(build_re('<artist> - <track_name><ext>'), file_name)
     if match:
         track_artist, track_name, file_ext = match.groups()
         return {'track_no': int(track_no), 'artist': track_artist, 'name': track_name, 'file_ext': file_ext.lower()}
